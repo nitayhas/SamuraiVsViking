@@ -1,0 +1,5 @@
+woodsword,2,4,samurai
+metalsword,3,6,samurai
+goldsword,4,7,samurai
+axe,3,5,viking
+doubleaxe,4,7,viking

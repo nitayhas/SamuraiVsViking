@@ -16,9 +16,9 @@ class Viking(Champion):
         Champion.__init__(self,posrect,VIKING_PATH,ground,SPEED,ATTACK_SPEED,VELOCITY,MASS,POWER,RANGE,SHIELD,HEALTH)
 
     def setWeapon(self, weapon):
-        if weapon.checkChampion(self.__class__.__name__):
+        if weapon.checkChampion(self._type()):
             if self._weapon is not None:
-                if weapon._high > self._weapon._high:
+                if weapon.getHigh() > self._weapon.getHigh():
                     self._weapon = copy.deepcopy(weapon)
                     return True
             else:

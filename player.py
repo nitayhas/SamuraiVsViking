@@ -9,87 +9,87 @@ RIGHT	= 1
 
 class commandJump(Command):
 	def execute(self, player):
-		return player.getChampion().jump()
+		return player.getChampion()._tryJump()
 
 class commandAttack(Command):
 	def execute(self, player):
 		if player.getChampion().checkRadius(player.getRival().getRect()):
-			player.getRival().onHit(player.getChampion().attack())
+			player.getRival()._onHit(player.getChampion()._tryAttack())
 		else:
-			player.getChampion().attack()
-		return player.getChampion().onAttack()
+			player.getChampion()._tryAttack()
+		return player.getChampion()._onAttack()
 
 class commandMoveLeft(Command):
 	def execute(self, player):
 		player.setDirection(LEFT)
-		return player.getChampion().move(LEFT)
+		return player.getChampion()._tryMove(LEFT)
 
 class commandMoveRight(Command):
 	def execute(self, player):
 		player.setDirection(RIGHT)
-		return player.getChampion().move(RIGHT)
+		return player.getChampion()._tryMove(RIGHT)
 
 class inputHandler:
 	def __init__(self,player, buttons):
-		self.buttons	= buttons
-		self.player		= player
-		self.ButtonA	= commandJump()
-		self.ButtonB	= commandMoveLeft()
-		self.ButtonC	= commandMoveRight()
-		self.ButtonD	= commandAttack()
+		self.___buttons	= buttons
+		self.__player	= player
+		self.__buttonA	= commandJump()
+		self.__buttonB	= commandMoveLeft()
+		self.__buttonC	= commandMoveRight()
+		self.__buttonD	= commandAttack()
 
 	def handle(self, keys):
-		result = self.player.getChampion().onStand()
-		self.player.setDirection(STAND)
-		if keys[self.buttons[0]]==1:
-			self.ButtonA.execute(self.player)
-		if keys[self.buttons[1]]==1:
-			result = self.ButtonB.execute(self.player)
-		if keys[self.buttons[2]]==1:
-			result = self.ButtonC.execute(self.player)
-		if keys[self.buttons[3]]==1:
-			result = self.ButtonD.execute(self.player)
+		result = self.__player.getChampion()._onStand()
+		self.__player.setDirection(STAND)
+		if keys[self.___buttons[0]]==1:
+			self.__buttonA.execute(self.__player)
+		if keys[self.___buttons[1]]==1:
+			result = self.__buttonB.execute(self.__player)
+		if keys[self.___buttons[2]]==1:
+			result = self.__buttonC.execute(self.__player)
+		if keys[self.___buttons[3]]==1:
+			result = self.__buttonD.execute(self.__player)
 		return result
 
 class Player(metaclass=Singleton):
-	def __init__(self, name="Player1", champion=None):
-		self._name			= name
-		self._direction		= 0
-		self._render		= None
-		self._champion		= champion
-		self._rival			= None
-		self._buttons		= [K_UP,K_LEFT,K_RIGHT,K_SPACE]
-		self._input_handler	= inputHandler(self,self._buttons)
+	def __init__(self, champion, name="Player1"):
+		self.__name			= name
+		self.__direction	= 0
+		self.__render		= None
+		self.__champion		= champion
+		self.__rival		= None
+		self.__buttons		= [K_UP,K_LEFT,K_RIGHT,K_SPACE]
+		self.__input_handler= inputHandler(self,self.__buttons)
 
 	def setName(self, name):
-		self._name = name
+		self.__name = name
 
 	def setChampion(self, champion):
-		if self._champion is None:
-			self._champion = champion
+		if self.__champion is None:
+			self.__champion = champion
 
 	def getChampion(self):
-		return self._champion
+		return self.__champion
 
 	def setRival(self, rival):
-		self._rival = rival
+		self.__rival = rival
 
 	def getRival(self):
-		return self._rival
+		return self.__rival
 
 	def setDirection(self,direction):
-		self._direction = direction
+		self.__direction = direction
 
 	def update(self,keystate=None):
 		if keystate is not None:
-			self._render = self._input_handler.handle(keystate)
+			self.__render = self.__input_handler.handle(keystate)
 		else:
-			if self._direction == 0:
-				self._render = self._champion.onStand()
+			if self.__direction == 0:
+				self.__render = self.__champion._onStand()
 			else:
-				self._render = self._champion.move(self._direction)
+				self.__render = self.__champion._tryMove(self.__direction)
 
-			self._render = self._champion.onAttack()
-			self._render = self._champion.onHit()
-			self._render = self._champion.onDie()
-		return self._render
+			self.__render = self.__champion._onAttack()
+			self.__render = self.__champion._onHit()
+			self.__render = self.__champion._onDie()
+		return self.__render

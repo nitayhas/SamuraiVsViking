@@ -5,60 +5,60 @@ import random
 HIT_CHANCES	= 90 # x out of 100 percentage
 
 class Computer(metaclass=Singleton):
-	def __init__(self, name="Computer1", champion=None):
-		self._name		= name
-		self._direction	= 0
-		self._render	= None
-		self._champion	= champion
-		self._rival		= None
+	def __init__(self, champion, name="Computer1"):
+		self.__name		= name
+		self.__direction	= 0
+		self.__render	= None
+		self.__champion	= champion
+		self.__rival		= None
 
 	def setName(self, name):
-		self._name = name
+		self.__name = name
 
 	def setChampion(self, champion):
-		if self._champion is None:
-			self._champion = champion
+		if self.__champion is None:
+			self.__champion = champion
 
 	def getChampion(self):
-		return self._champion
+		return self.__champion
 
 	def setRival(self, rival):
-		self._rival = rival
+		self.__rival = rival
 
 	def update(self, update=True):
-		if self._rival.isAlive():
+		if self.__rival.isAlive():
 			rand = random.randint(0,100)
-			if self._champion.checkRadius(self._rival.getRect()):
+			if self.__champion.checkRadius(self.__rival.getRect()):
 				if rand<=HIT_CHANCES:
-					self._rival.onHit(self._champion.attack())
+					self.__rival._onHit(self.__champion._tryAttack())
 				else:
-					self._champion.attack()
-			if self._rival.getRect().left < self.getChampion().getRect().left:
+					self.__champion._tryAttack()
+			if self.__rival.getRect().left < self.getChampion().getRect().left:
 				rand2 = 1
-			elif self._rival.getRect().left > self.getChampion().getRect().left:
+			elif self.__rival.getRect().left > self.getChampion().getRect().left:
 				rand2 = 2
 			else:
 				rand2 = 0
 
 			if rand<=10 and update:
 				if rand2 == 1:
-					self._direction = -1
-					self._render = self._champion.move(self._direction)
+					self.__direction = -1
+					self.__render = self.__champion._tryMove(self.__direction)
 				elif rand2 == 2:
-					self._direction = 1
-					self._render = self._champion.move(self._direction)
+					self.__direction = 1
+					self.__render = self.__champion._tryMove(self.__direction)
 				else:
-					self._direction = 0
-					self._render = self._champion.onStand()
+					self.__direction = 0
+					self.__render = self.__champion._onStand()
 			else:
-				if self._direction == 0:
-					self._render = self._champion.onStand()
+				if self.__direction == 0:
+					self.__render = self.__champion._onStand()
 				else:
-					self._render = self._champion.move(self._direction)
+					self.__render = self.__champion._tryMove(self.__direction)
 
-				self._render = self._champion.onAttack()
-				self._render = self._champion.onHit()
-				self._render = self._champion.onDie()
+				self.__render = self.__champion._onAttack()
+				self.__render = self.__champion._onHit()
+				self.__render = self.__champion._onDie()
 		else:
-			self._render = self._champion.onStand()
-		return self._render
+			self.__render = self.__champion._onStand()
+		return self.__render

@@ -120,7 +120,7 @@ class Champion:
     def setWeapon(self, weapon):
         pass
 
-    def move(self, direction):
+    def _tryMove(self, direction):
         if self._die == -1:
             self._direction = direction
             self._stand = 1
@@ -130,8 +130,8 @@ class Champion:
             self._rect = pygame.Rect((bounderies[1],self._rect.top),(self._rect.width, self._rect.height))
             if not self._isjump and self._rect.top < bounderies[0]:
                 self._isfall = True
-            self.onFall() if self._isfall else None
-            self.onJump() if self._isjump else None
+            self.__onFall() if self._isfall else None
+            self.__onJump() if self._isjump else None
             self._image = self._walk_images[self._walk]
             self._image = pygame.transform.scale(self._image, self._rect.size)
             self._image = self._image.convert_alpha()
@@ -139,19 +139,19 @@ class Champion:
                 self._image = pygame.transform.flip(self._image, True, False)
         return (self._image,self._rect)
 
-    def jump(self):
+    def _tryJump(self):
         if self._die == -1 and not self._isjump:
             self._isjump = True
 
     ## Formula: Power = (Weapon strength * Power)
-    def attack(self):
+    def _tryAttack(self):
         if self._die == -1 and self._attack == -1 and self._hit == -1:
             self._attack = 0
             power = (self._weapon.getWeaponPower() * self._power) if self._weapon is not None else self._power
             return power
         return 0
 
-    def onStand(self):
+    def _onStand(self):
         if self._die == -1:
             self._walk = 0
             self._stand = (self._stand+1)%10
@@ -159,8 +159,8 @@ class Champion:
             self._rect = pygame.Rect((self._rect.left,self._rect.top),(self._rect.width, self._rect.height))
             if not self._isjump and self._rect.top < bounderies[0]:
                 self._isfall = True
-            self.onFall() if self._isfall else None
-            self.onJump() if self._isjump else None
+            self.__onFall() if self._isfall else None
+            self.__onJump() if self._isjump else None
             self._image = self._stand_images[self._stand]
             self._image = pygame.transform.scale(self._image, self._rect.size)
             self._image = self._image.convert_alpha()
@@ -168,35 +168,7 @@ class Champion:
                 self._image = pygame.transform.flip(self._image, True, False)
         return (self._image,self._rect)
 
-    ## Kinetic Energy: 1/2*Mass*Velocity^2
-    def onJump(self):
-        if self.getVelocity() > 0:
-            F = (0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
-        else:
-            F = -(0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
-
-        top = self.getGround(self._rect)
-        self._rect.top = self._rect.top - F
-
-        if top > self._rect.top:
-            self.setVelocity(self.getVelocity() - 1)
-        else:
-            self._rect.top = top
-            self._isjump = False
-            self.setVelocity(self._basicvelocity)
-
-    def onFall(self):
-        F = (0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
-        top = self.getGround(self._rect)
-        self._rect.top = self._rect.top + F
-        if top > self._rect.top:
-            self.setVelocity(self.getVelocity() - 1)
-        else:
-            self._rect.top = top
-            self._isfall = False
-            self.setVelocity(self._basicvelocity)
-
-    def onAttack(self):
+    def _onAttack(self):
         if self._attack > 8:
             self._attack = -1
         elif self._attack > -1:
@@ -210,7 +182,7 @@ class Champion:
                 self._image = pygame.transform.flip(self._image, True, False)
         return (self._image,self._rect)
 
-    def onHit(self, damage=0):
+    def _onHit(self, damage=0):
         if self._life > 0:
             if damage > 0:
                 damage = damage/self.getShield()
@@ -233,7 +205,7 @@ class Champion:
                     self._image = pygame.transform.flip(self._image, True, False)
         return (self._image,self._rect)
 
-    def onDie(self):
+    def _onDie(self):
         if self._die > -1:
             self._die +=1
             self._die = 9 if self._die > 8 else self._die
@@ -243,3 +215,31 @@ class Champion:
             if self._direction < 0:
                 self._image = pygame.transform.flip(self._image, True, False)
         return (self._image,self._rect)
+
+    ## Kinetic Energy: 1/2*Mass*Velocity^2
+    def __onJump(self):
+        if self.getVelocity() > 0:
+            F = (0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
+        else:
+            F = -(0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
+
+        top = self.getGround(self._rect)
+        self._rect.top = self._rect.top - F
+
+        if top > self._rect.top:
+            self.setVelocity(self.getVelocity() - 1)
+        else:
+            self._rect.top = top
+            self._isjump = False
+            self.setVelocity(self._basicvelocity)
+
+    def __onFall(self):
+        F = (0.5 * self.getMass() * (self.getVelocity()*self.getVelocity()))
+        top = self.getGround(self._rect)
+        self._rect.top = self._rect.top + F
+        if top > self._rect.top:
+            self.setVelocity(self.getVelocity() - 1)
+        else:
+            self._rect.top = top
+            self._isfall = False
+            self.setVelocity(self._basicvelocity)

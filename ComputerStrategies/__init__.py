@@ -1,0 +1,3 @@
+from .computer_strategy import ComputerStrategy
+from .computer_strategy_a import ComputerStrategyA
+from .computer_strategy_b import ComputerStrategyB

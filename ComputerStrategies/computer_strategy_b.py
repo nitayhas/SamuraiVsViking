@@ -11,7 +11,7 @@ class ComputerStrategyB(ComputerStrategy):
 		if computer.getRival().isAlive():
 			rand = random.randint(0,100)
 			if computer.getChampion().checkRadius(computer.getRival().getRect()):
-				if rand<=computer.getHitChanges():
+				if rand<=computer.getHitChances():
 					computer.getRival()._onHit(computer.getChampion()._tryAttack())
 				else:
 					computer.getChampion()._tryAttack()

@@ -36,10 +36,10 @@ class Computer(metaclass=Singleton):
 	def getDirection(self):
 		return self.__direction
 
-	def setHitChanges(self, hit_chances):
+	def setHitChances(self, hit_chances):
 		self.__hit_chances = hit_chances
 
-	def getHitChanges(self):
+	def getHitChances(self):
 		return self.__hit_chances
 
 	def getRender(self):
